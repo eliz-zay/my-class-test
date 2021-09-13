@@ -9,6 +9,8 @@ class Service {
         args.date ? args.date = args.date.split(',') : null;
         args.teacherIds ? args.teacherIds = args.teacherIds.split(',') : null;
         args.studentsCount ? args.studentsCount = args.studentsCount.split(',') : null;
+        args.lessonsPerPage = args.lessonsPerPage ?? 5;
+        args.page = args.page ?? 1;
         await this.repository.getLessons(args);
         return "OK";
 
