@@ -1,85 +1,10 @@
-const { ClientPool } = require('./ClientPool');
-const { QueryTypes, DataTypes, Op } = require('sequelize');
+const { SequelizeInstance } = require('./SequelizeInstance');
+const { QueryTypes } = require('sequelize');
 
 class Repository {
     constructor() {
-        const clientPool = new ClientPool();
-        this.sequelize = clientPool.sequelize;
-        this.sequelize.define(
-            'Lesson', 
-            {
-                id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true },
-                date: { type: DataTypes.DATEONLY, allowNull: false },
-                title: { type: DataTypes.STRING(100) },
-                status: { type: DataTypes.INTEGER }
-            },
-            { tableName: 'lessons', timestamps: false }
-        );
-        this.sequelize.define(
-            'Teacher', 
-            {
-                id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true },
-                name: { type: DataTypes.STRING(10) },
-            },
-            { tableName: 'teachers', timestamps: false }
-        );
-        this.sequelize.define(
-            'Student', 
-            {
-                id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true },
-                name: { type: DataTypes.STRING(10) },
-            },
-            { tableName: 'students', timestamps: false  }
-        );
-        this.sequelize.define(
-            'LessonTeacher',
-            {
-                lesson_id: {
-                    type: DataTypes.INTEGER,
-                    references: {
-                        model: this.sequelize.models.Lesson,
-                        key: 'id'
-                    }
-                },
-                teacher_id: {
-                    type: DataTypes.INTEGER,
-                    references: {
-                        model: this.sequelize.models.Teacher,
-                        key: 'id'
-                    }
-                }
-            },
-            { tableName: 'lesson_teachers', timestamps: false }
-        );
-        this.sequelize.define(
-            'LessonStudent',
-            {
-                lesson_id: {
-                    type: DataTypes.INTEGER,
-                    references: {
-                        model: this.sequelize.models.Lesson,
-                        key: 'id'
-                    }
-                },
-                student_id: {
-                    type: DataTypes.INTEGER,
-                    references: {
-                        model: this.sequelize.models.Student,
-                        key: 'id'
-                    }
-                },
-                visit: { type: DataTypes.BOOLEAN }
-            },
-            { tableName: 'lesson_students', timestamps: false }
-        );
-
-        const { Teacher, Student, Lesson, LessonTeacher, LessonStudent } = this.sequelize.models;
-
-        Teacher.belongsToMany(Lesson, { through: LessonTeacher, foreignKey: 'teacher_id' });
-        Lesson.belongsToMany(Teacher, { through: LessonTeacher, foreignKey: 'lesson_id' });
-
-        Student.belongsToMany(Lesson, { through: LessonStudent, foreignKey: 'student_id'});
-        Lesson.belongsToMany(Student, { through: LessonStudent, foreignKey: 'lesson_id'});
+        const seqInstance = new SequelizeInstance();
+        this.sequelize = seqInstance.sequelize;
     }
 
     async getLessons({ date, status, teacherIds, studentsCount, page, lessonsPerPage }) {
@@ -157,6 +82,30 @@ class Repository {
             item.dataValues.Students.forEach(t => console.log(t.dataValues.id + ' ' + t.dataValues.name + ' ' + t.dataValues.visit));
             console.log('\n*****\n')
         });
+    }
+
+    async createLessons(dates, title, teacherIds) {
+        const { Lesson, LessonTeacher } = this.sequelize.models;
+
+    //     dates.forEach(date => {
+    //         let res1 = Lesson.create(
+    //             {
+    //                 title: title,
+    //                 date: date
+    //             }
+    //         );
+    //         console.log(res1.dataValues);
+    //         const lessonId = res1.dataValues.id;
+    //         teacherIds.forEach(id => {
+    //             let res = LessonTeacher.create(
+    //                 {
+    //                     teacher_id: id,
+    //                     lesson_id: lessonId
+    //                 }
+    //             );
+    //             console.log(res.dataValues);
+    //         });
+    //     });
     }
 }
 
