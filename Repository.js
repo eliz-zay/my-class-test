@@ -62,7 +62,7 @@ class Repository {
             limit: lessonsPerPage
         });
 
-        // Add visitCount for lesson, visit for each student
+        // Add visitCount for lesson and visit for each student
         res.forEach(lesson => {
             let visitCount = 0;
             lesson.Students.forEach(student => {
@@ -85,27 +85,21 @@ class Repository {
     }
 
     async createLessons(dates, title, teacherIds) {
-        const { Lesson, LessonTeacher } = this.sequelize.models;
+        const { Lesson } = this.sequelize.models;
 
-    //     dates.forEach(date => {
-    //         let res1 = Lesson.create(
-    //             {
-    //                 title: title,
-    //                 date: date
-    //             }
-    //         );
-    //         console.log(res1.dataValues);
-    //         const lessonId = res1.dataValues.id;
-    //         teacherIds.forEach(id => {
-    //             let res = LessonTeacher.create(
-    //                 {
-    //                     teacher_id: id,
-    //                     lesson_id: lessonId
-    //                 }
-    //             );
-    //             console.log(res.dataValues);
-    //         });
-    //     });
+        let ids = [];
+
+        await Promise.all(dates.map(async (date) => {
+            const lesson = await Lesson.create({
+                title: title,
+                date: date,
+                teachers: [teacherIds]
+            });
+
+            ids.push(lesson.dataValues.id);
+        }));
+
+        return ids;
     }
 }
 

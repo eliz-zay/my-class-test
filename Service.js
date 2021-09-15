@@ -85,10 +85,8 @@ class Service {
             }
         }
 
-        console.log(dates);
-
-        await this.repository.createLessons(dates, title, teacherIds);
-        return "OK";
+        const lessonIds = await this.repository.createLessons(dates, title, teacherIds);
+        return lessonIds;
     }
 }
 

@@ -15,8 +15,8 @@ lessonRouter.get("/", async (req, res, next) => {
 lessonRouter.post("/lessons", async (req, res, next) => {
     try {
         const service = new Service();
-        const lessons = await service.createLessons(req.body);
-        return res.status(200).json(lessons);
+        const lessonIds = await service.createLessons(req.body);
+        return res.status(200).json(lessonIds);
     } catch (err) {
         return next(err);
     }

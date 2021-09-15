@@ -12,7 +12,7 @@ class SequelizeInstance {
             this.sequelize.define(
                 'Lesson', 
                 {
-                    id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true },
+                    id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
                     date: { type: DataTypes.DATEONLY, allowNull: false },
                     title: { type: DataTypes.STRING(100) },
                     status: { type: DataTypes.INTEGER }
@@ -22,7 +22,7 @@ class SequelizeInstance {
             this.sequelize.define(
                 'Teacher', 
                 {
-                    id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true },
+                    id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
                     name: { type: DataTypes.STRING(10) },
                 },
                 { tableName: 'teachers', timestamps: false }
@@ -30,7 +30,7 @@ class SequelizeInstance {
             this.sequelize.define(
                 'Student', 
                 {
-                    id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true },
+                    id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
                     name: { type: DataTypes.STRING(10) },
                 },
                 { tableName: 'students', timestamps: false  }
