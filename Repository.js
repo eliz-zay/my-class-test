@@ -54,7 +54,7 @@ class Repository {
         const lessonIds = queryRes.map(item => item.id)
         
         // Get full info for chosen lessons
-        let res = await Lesson.findAll({
+        let dbResult = await Lesson.findAll({
             where: { id: lessonIds }, // id IN lessonIds
             include: [
                 { model: Teacher },
@@ -65,7 +65,7 @@ class Repository {
         });
 
         // Add visitCount for lesson and visit for each student
-        res.forEach(lesson => {
+        dbResult.forEach(lesson => {
             let visitCount = 0;
             lesson.Students.forEach(student => {
                 visitCount += student.LessonStudent.dataValues.visit;
@@ -74,16 +74,26 @@ class Repository {
             lesson.dataValues.visitCount = visitCount;
         });
 
-        res.forEach(item => {
-            console.log('id: ' + item.dataValues.id);
-            console.log('date: ' + item.dataValues.date);
-            console.log('title: ' + item.dataValues.title);
-            console.log('status: ' + item.dataValues.status);
-            console.log('visitCount: ' + item.dataValues.visitCount);
-            item.dataValues.Teachers.forEach(t => console.log(t.dataValues.id + ' ' + t.dataValues.name));
-            item.dataValues.Students.forEach(t => console.log(t.dataValues.id + ' ' + t.dataValues.name + ' ' + t.dataValues.visit));
-            console.log('\n*****\n')
+        const lessonsData = dbResult.map(item => {
+            return {
+                id: item.dataValues.id,
+                date: item.dataValues.date,
+                title: item.dataValues.title,
+                status: item.dataValues.status,
+                visitCount: item.dataValues.visitCount,
+                students: item.dataValues.Students.map(stud => { return {
+                    id: stud.dataValues.id,
+                    name: stud.dataValues.name,
+                    visit: stud.dataValues.visit
+                }}),
+                teachers: item.dataValues.Teachers.map(teacher => { return {
+                    id: teacher.dataValues.id,
+                    name: teacher.dataValues.name
+                }})
+            }
         });
+
+        return lessonsData;
     }
 
     async createLessons(dates, title, teacherIds) {

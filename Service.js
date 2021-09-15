@@ -12,8 +12,10 @@ class Service {
         args.studentsCount ? args.studentsCount = args.studentsCount.split(',') : null;
         args.lessonsPerPage = args.lessonsPerPage ?? 5;
         args.page = args.page ?? 1;
-        await this.repository.getLessons(args);
-        return "OK";
+
+        const lessons = await this.repository.getLessons(args);
+
+        return lessons;
     }
 
     async createLessons({ firstDate: aFirstDate, lastDate: aLastDate, days, lessonsCount, teacherIds, title }) {
@@ -91,6 +93,7 @@ class Service {
         }
 
         const lessonIds = await this.repository.createLessons(dates, title, teacherIds);
+        
         return lessonIds;
     }
 }
