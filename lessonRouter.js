@@ -1,8 +1,10 @@
-const lessonRouter = require("express").Router();
+const lessonRouter = require('express').Router();
+const validator = require('express-joi-validation').createValidator();
 
-const { Service } = require("./Service"); 
+const { Service } = require("./Service");
+const { getLessonsSchema, createLessonsSchema } = require('./schema');
 
-lessonRouter.get("/", async (req, res, next) => {
+lessonRouter.get("/", validator.body(getLessonsSchema), async (req, res, next) => {
     try {
         const service = new Service();
         const lessons = await service.getFullLessonInfo(req.body);
@@ -12,7 +14,7 @@ lessonRouter.get("/", async (req, res, next) => {
     }
 });
 
-lessonRouter.post("/lessons", async (req, res, next) => {
+lessonRouter.post("/lessons", validator.body(createLessonsSchema), async (req, res, next) => {
     try {
         const service = new Service();
         const lessonIds = await service.createLessons(req.body);

@@ -1,4 +1,5 @@
 const { Repository } = require("./Repository");
+const { ApiError } = require("./ApiError");
 
 class Service {
     constructor(repository) {
@@ -16,7 +17,6 @@ class Service {
     }
 
     async createLessons({ firstDate: aFirstDate, lastDate: aLastDate, days, lessonsCount, teacherIds, title }) {
-
         let addDays = (date, daysNum) => {
             let result = new Date(date);
             result.setDate(result.getDate() + daysNum);
@@ -40,13 +40,15 @@ class Service {
 
         if (lessonsCount) {
             // loop current week
-            days.forEach(day => {
-                if (lessonsCount && day >= firstDay && checkLimit()) {
-                    dates.push(addDays(firstDate, day - firstDay));
-                    lessonsCount--;
-                    lessonsRegistered++;
-                }
-            });
+            if (firstDay != 0) {
+                days.forEach(day => {
+                    if (lessonsCount && day >= firstDay && checkLimit()) {
+                        dates.push(addDays(firstDate, day - firstDay));
+                        lessonsCount--;
+                        lessonsRegistered++;
+                    }
+                });
+            }
     
             // loop other weeks
             let sunday = addDays(firstDate, (7 - firstDay) % 7);
@@ -63,13 +65,16 @@ class Service {
 
         } else { // lastDate check
             // loop current week
-            days.forEach(day => {
-                currentDate = addDays(firstDate, day - firstDay);
-                if (currentDate <= lastDate && day >= firstDay && checkLimit()) {
-                    dates.push(currentDate);
-                    lessonsRegistered++;
-                }
-            });
+            if (firstDay != 0) {
+                days.forEach(day => {
+                    currentDate = addDays(firstDate, day - firstDay);
+                    if (currentDate <= lastDate && day >= firstDay && checkLimit()) {
+                        dates.push(currentDate);
+                        lessonsRegistered++;
+                        console.log(currentDate);
+                    }
+                });
+            }
 
             // loop other weeks
             let sunday = addDays(firstDate, (7 - firstDay) % 7);

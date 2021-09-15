@@ -1,5 +1,7 @@
-const { SequelizeInstance } = require('./SequelizeInstance');
 const { QueryTypes } = require('sequelize');
+
+const { SequelizeInstance } = require('./SequelizeInstance');
+const { ApiError } = require("./ApiError");
 
 class Repository {
     constructor() {
@@ -92,9 +94,10 @@ class Repository {
         await Promise.all(dates.map(async (date) => {
             const lesson = await Lesson.create({
                 title: title,
-                date: date,
-                teachers: [teacherIds]
+                date: date
             });
+
+            await lesson.addTeachers(teacherIds);
 
             ids.push(lesson.dataValues.id);
         }));
