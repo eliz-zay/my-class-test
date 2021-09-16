@@ -27,10 +27,10 @@ class Service {
 
         let checkLimit = () => !(lessonsRegistered >= 300 || currentDate >= yearFromFirstLesson);
 
-        let firstDate = new Date(aFirstDate);
-        let lastDate = new Date(aLastDate);
-        let firstDay = firstDate.getDay();
-        let yearFromFirstLesson = new Date(
+        const firstDate = new Date(aFirstDate);
+        const lastDate = new Date(aLastDate);
+        const firstDay = firstDate.getDay();
+        const yearFromFirstLesson = new Date(
             firstDate.getFullYear() + 1,
             firstDate.getMonth(),
             firstDate.getDate()
@@ -44,8 +44,9 @@ class Service {
             // loop current week
             if (firstDay != 0) {
                 days.forEach(day => {
+                    currentDate = addDays(firstDate, day - firstDay);
                     if (lessonsCount && day >= firstDay && checkLimit()) {
-                        dates.push(addDays(firstDate, day - firstDay));
+                        dates.push(currentDate);
                         lessonsCount--;
                         lessonsRegistered++;
                     }
@@ -56,8 +57,9 @@ class Service {
             let sunday = addDays(firstDate, (7 - firstDay) % 7);
             while (lessonsCount && checkLimit()) {
                 days.forEach(day => {
+                    currentDate = addDays(sunday, day);
                     if (lessonsCount && checkLimit()) {
-                        dates.push(addDays(sunday, day));
+                        dates.push(currentDate);
                         lessonsCount--;
                         lessonsRegistered++;
                     }
@@ -73,7 +75,6 @@ class Service {
                     if (currentDate <= lastDate && day >= firstDay && checkLimit()) {
                         dates.push(currentDate);
                         lessonsRegistered++;
-                        console.log(currentDate);
                     }
                 });
             }
@@ -93,7 +94,7 @@ class Service {
         }
 
         const lessonIds = await this.repository.createLessons(dates, title, teacherIds);
-        
+
         return lessonIds;
     }
 }

@@ -74,24 +74,22 @@ class Repository {
             lesson.dataValues.visitCount = visitCount;
         });
 
-        const lessonsData = dbResult.map(item => {
-            return {
-                id: item.dataValues.id,
-                date: item.dataValues.date,
-                title: item.dataValues.title,
-                status: item.dataValues.status,
-                visitCount: item.dataValues.visitCount,
-                students: item.dataValues.Students.map(stud => { return {
-                    id: stud.dataValues.id,
-                    name: stud.dataValues.name,
-                    visit: stud.dataValues.visit
-                }}),
-                teachers: item.dataValues.Teachers.map(teacher => { return {
-                    id: teacher.dataValues.id,
-                    name: teacher.dataValues.name
-                }})
-            }
-        });
+        const lessonsData = dbResult.map(item => ({
+            id: item.dataValues.id,
+            date: item.dataValues.date,
+            title: item.dataValues.title,
+            status: item.dataValues.status,
+            visitCount: item.dataValues.visitCount,
+            students: item.dataValues.Students.map(stud => ({
+                id: stud.dataValues.id,
+                name: stud.dataValues.name,
+                visit: stud.dataValues.visit
+            })),
+            teachers: item.dataValues.Teachers.map(teacher => ({
+                id: teacher.dataValues.id,
+                name: teacher.dataValues.name
+            }))
+        }));
 
         return lessonsData;
     }
