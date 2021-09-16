@@ -7,7 +7,7 @@ class SequelizeInstance {
     constructor() {
         if (!SequelizeInstance.#instance) {
             SequelizeInstance.#instance = this;
-            this.sequelize = new Sequelize(process.env.DB_URL);
+            this.sequelize = new Sequelize(process.env.DB_URL, { logging: false });
 
             this.sequelize.define(
                 'Lesson', 

@@ -14,7 +14,7 @@ app.use("/", lessonRouter);
 
 app.use((err, req, res, next) => {
     if (err instanceof ApiError) {
-        return res.status(200).send(err.message);
+        return res.status(400).send(err.message);
     }
     
     console.log(err);
@@ -24,3 +24,5 @@ app.use((err, req, res, next) => {
 app.listen(process.env.PORT, () => {
     console.log(`App listening on port ${process.env.PORT}`);
 });
+
+module.exports.app = app;
