@@ -21,15 +21,33 @@ class Repository {
             dateConstraint.val = [date, date]
         }
 
-        let teacherIdsConstraint = teacherIds ? ' and array_agg(teachers.id) && array['+teacherIds+'] ' : '';
+        let teacherIdsConstraint = '';
+        if (teacherIds) {
+            teacherIdsConstraint = 
+                ' and (\
+                    (select array_agg(teacher_id) from lesson_teachers \
+                    group by lesson_id having lesson_id = lessons.id) && \
+                    array['+teacherIds+']\
+                )';
+        }
 
         let studCountConstraint = {};
         if (studentsCount && studentsCount.length == 2) { 
-            studCountConstraint.q = ' and count(lesson_students.student_id) BETWEEN ? AND ? ';
-            studCountConstraint.val = [studentsCount[0], studentsCount[1]]
+            studCountConstraint.val = [studentsCount[0], studentsCount[1]];
+            studCountConstraint.q =
+                ' and (\
+                    (select count(student_id) from lesson_students \
+                    group by lesson_id having lesson_id = lessons.id) \
+                    BETWEEN ? AND ?  \
+                )';
         } else {
-            studCountConstraint.q = ' and (count(lesson_students.student_id) = ? OR ? IS NULL) ';
             studCountConstraint.val = [studentsCount, studentsCount];
+            studCountConstraint.q =
+                ' and (\
+                    (select count(student_id) from lesson_students \
+                    group by lesson_id having lesson_id = lessons.id) \
+                    = ? OR ? IS NULL \
+                )';
         }
 
         // Get lesson IDs for lessons that match the filter
@@ -38,13 +56,13 @@ class Repository {
                 lessons.id \
             from \
                 lessons \
-                    join lesson_teachers on lesson_teachers.lesson_id = lessons.id \
-                    join teachers on lesson_teachers.teacher_id = teachers.id \
-                    join lesson_students on lesson_students.lesson_id = lessons.id \
-                    join students on students.id = lesson_students.student_id \
-                    where (lessons.status = ? or ? is null) and '+dateConstraint.q+
-                    ' group by lessons.id \
-                    having true ' + teacherIdsConstraint + studCountConstraint.q,
+                    left join lesson_teachers on lesson_teachers.lesson_id = lessons.id \
+                    left join teachers on lesson_teachers.teacher_id = teachers.id \
+                    left join lesson_students on lesson_students.lesson_id = lessons.id \
+                    left join students on students.id = lesson_students.student_id \
+                    where (lessons.status = ? or ? is null) and '+
+                    dateConstraint.q + teacherIdsConstraint + studCountConstraint.q +
+                    ' group by lessons.id',
             {
                 replacements: ([status, status]).concat(dateConstraint.val).concat(studCountConstraint.val),
                 type: QueryTypes.SELECT
