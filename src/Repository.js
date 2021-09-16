@@ -1,7 +1,6 @@
 const { QueryTypes } = require('sequelize');
 
 const { SequelizeInstance } = require('./SequelizeInstance');
-const { ApiError } = require("./ApiError");
 
 class Repository {
     constructor() {

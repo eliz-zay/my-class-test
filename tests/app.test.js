@@ -1,14 +1,14 @@
 const request = require('supertest');
 const assert = require('chai').assert;
 
-let app = require('../src/index').app;
+const app = require('../src/index').app;
 
 describe('GET "/": requests lessons data', () => {
-    it('between two dates with other options', done => {
+    it('between two dates', done => {
         request(app)
             .get('/')
             .send({
-                date: '2020-01-01,2020-03-04'
+                date: '2019-05-01,2019-06-20'
             })
             .expect(200)
             .expect(res => {

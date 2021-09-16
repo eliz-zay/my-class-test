@@ -1,5 +1,5 @@
-const { Repository } = require("./Repository");
-const { ApiError } = require("./ApiError");
+const { Repository } = require('./Repository');
+const { ApiError } = require('./ApiError');
 
 class Service {
     constructor(repository) {
@@ -19,6 +19,10 @@ class Service {
     }
 
     async createLessons({ firstDate: aFirstDate, lastDate: aLastDate, days, lessonsCount, teacherIds, title }) {
+        if (!days.length) {
+            throw new ApiError('Days must not be empty.')
+        }
+
         let addDays = (date, daysNum) => {
             let result = new Date(date);
             result.setDate(result.getDate() + daysNum);
@@ -35,6 +39,10 @@ class Service {
             firstDate.getMonth(),
             firstDate.getDate()
         );
+
+        if (firstDate > lastDate) {
+            throw new ApiError('First date cannot be less than last date.')
+        }
 
         let dates = [];
         let currentDate = firstDate;
